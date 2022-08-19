@@ -58,7 +58,7 @@ JNIEXPORT jbyteArray JNICALL Java_jni_JniWrapper_dummyCall___3B
   jsize array_len = env->GetArrayLength(array);
   jbyte* raw_array = env->GetByteArrayElements(array, 0);
   return array;
-  JNI_METHOD_END(NULL)
+  JNI_METHOD_END(nullptr)
 }
 
 JNIEXPORT jcharArray JNICALL Java_jni_JniWrapper_dummyCall___3C
@@ -67,7 +67,7 @@ JNIEXPORT jcharArray JNICALL Java_jni_JniWrapper_dummyCall___3C
   jsize array_len = env->GetArrayLength(array);
   jchar* raw_array = env->GetCharArrayElements(array, 0);
   return array;
-  JNI_METHOD_END(NULL)
+  JNI_METHOD_END(nullptr)
 }
 
 JNIEXPORT jintArray JNICALL Java_jni_JniWrapper_dummyCall___3I
@@ -76,7 +76,7 @@ JNIEXPORT jintArray JNICALL Java_jni_JniWrapper_dummyCall___3I
   jsize array_len = env->GetArrayLength(array);
   jint* raw_array = env->GetIntArrayElements(array, 0);
   return array;
-  JNI_METHOD_END(NULL)
+  JNI_METHOD_END(nullptr)
 }
 
 JNIEXPORT jlongArray JNICALL Java_jni_JniWrapper_dummyCall___3J
@@ -85,7 +85,7 @@ JNIEXPORT jlongArray JNICALL Java_jni_JniWrapper_dummyCall___3J
   jsize array_len = env->GetArrayLength(array);
   jlong* raw_array = env->GetLongArrayElements(array, 0);
   return array;
-  JNI_METHOD_END(NULL)
+  JNI_METHOD_END(nullptr)
 }
 
 JNIEXPORT jobjectArray JNICALL Java_jni_JniWrapper_dummyCall___3Ljava_lang_String_2
@@ -94,7 +94,7 @@ JNIEXPORT jobjectArray JNICALL Java_jni_JniWrapper_dummyCall___3Ljava_lang_Strin
 //  jsize array_len = env->GetArrayLength(array);
 //  jstring* raw_array = env->GetStringArrayElements(array, 0);
   return array;
-  JNI_METHOD_END(NULL)
+  JNI_METHOD_END(nullptr)
 }
 
 JNIEXPORT jlong JNICALL Java_jni_JniWrapper_buildProjector
