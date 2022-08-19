@@ -32,6 +32,7 @@ find_package(JNI REQUIRED)
 set(JNI_HEADERS_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}
+                    ${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp/
                     ${JNI_INCLUDE_DIRS} ${JNI_HEADERS_DIR})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wall")
@@ -40,6 +41,7 @@ add_jar(${PROJECT_NAME}
         src/main/java/jni/JniException.java
         src/main/java/jni/JniLoader.java
         src/main/java/jni/JniWrapper.java
+        src/main/java/jni/DummyData.java
         GENERATE_NATIVE_HEADERS
         hello_jni-native
         DESTINATION

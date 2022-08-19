@@ -36,9 +36,14 @@ public class JniWrapper {
 
     /**
      * simple jni method to test jni call overhead
-     * @param memoryAddress memory address array to jni
      */
-    public native void dummyCall(long[] memoryAddress);
+    public native void dummyCall();
+    public native byte[] dummyCall(byte[] memoryAddress);
+    public native char[] dummyCall(char[] memoryAddress);
+    public native int[] dummyCall(int[] memoryAddress);
+    public native long[] dummyCall(long[] memoryAddress);
+    public native String[] dummyCall(String[] memoryAddress);
+    public native DummyData objectCall(DummyData dummyData);
 
     /**
      * Generates the projector module to evaluate the expressions with
