@@ -14,7 +14,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.source>1.8</project.build.source>
     <project.build.target>1.8</project.build.target>
-    <cpp.build.dir>jni_lib/release-build</cpp.build.dir>
+    <cpp.build.dir>release-build</cpp.build.dir>
   </properties>
 
   <dependencies>

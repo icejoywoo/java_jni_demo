@@ -8,7 +8,7 @@ BUILD_DIR=release-build
 
 # build jni library
 (
-  cd ${CURRENT_DIR}/jni_lib
+  cd ${CURRENT_DIR}
   [ -d ${BUILD_DIR} ] && rm -rfv ${BUILD_DIR}
   mkdir ${BUILD_DIR}
   cd ${BUILD_DIR}
