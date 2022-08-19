@@ -34,6 +34,26 @@ jclass CreateGlobalClassReference(JNIEnv* env, const char* class_name) {
   return global_class;
 }
 
+jmethodID GetMethodID(JNIEnv* env, jclass this_class, const char* name, const char* sig) {
+  jmethodID ret = env->GetMethodID(this_class, name, sig);
+  if (ret == nullptr) {
+    std::string error_message = "Unable to find method " + std::string(name) +
+                                " with signature " + std::string(sig);
+    ThrowPendingException(error_message);
+  }
+  return ret;
+}
+
+jfieldID GetFieldID(JNIEnv* env, jclass this_class, const char* name, const char* sig) {
+  jfieldID fieldId = env->GetFieldID(this_class, name, sig);
+  if (fieldId == nullptr) {
+    std::string error_message = "Unable to find field " + std::string(name) +
+                                " with signature " + std::string(sig);
+    ThrowPendingException(error_message);
+  }
+  return fieldId;
+}
+
 class JNIEnvGuard {
  public:
   explicit JNIEnvGuard(JavaVM* vm) : vm_(vm), should_detach_(false) {

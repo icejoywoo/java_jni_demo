@@ -12,6 +12,82 @@ jclass kRuntimeExceptionClass;
 jclass kDummyDataClass;
 jclass kJniExceptionClass;
 
+// copied from arrow gandiva cpp jni_common.cc
+static jclass vector_expander_class_;
+static jclass vector_expander_ret_class_;
+static jmethodID vector_expander_method_;
+static jfieldID vector_expander_ret_address_;
+static jfieldID vector_expander_ret_capacity_;
+
+
+/// copied from arrow gandiva jni_common.cc
+///
+/// \brief Resizable buffer which resizes by doing a callback into java.
+///
+class JavaResizableBuffer {
+ public:
+  JavaResizableBuffer(JNIEnv* env, jobject jexpander, int32_t vector_idx, uint8_t* buffer,
+                      int32_t len)
+      : env_(env),
+        jexpander_(jexpander),
+        vector_idx_(vector_idx),
+        data_(buffer),
+        capacity_(len) {
+    size_ = 0;
+  }
+
+  int Resize(const int64_t new_size, bool shrink_to_fit);
+
+  int Reserve(const int64_t new_capacity) {
+    ThrowPendingException("reserve not implemented");
+    return -1;
+  }
+
+  int32_t capacity() {
+    return capacity_;
+  }
+
+ private:
+  JNIEnv* env_;
+  jobject jexpander_;
+  int32_t vector_idx_;
+  uint8_t* data_;
+  int32_t capacity_;
+  int32_t size_;
+};
+
+int JavaResizableBuffer::Resize(const int64_t new_size, bool shrink_to_fit) {
+  if (shrink_to_fit == true) {
+    ThrowPendingException("shrink not implemented");
+    return -1;
+  }
+
+  if (new_size < capacity()) {
+    // no need to expand.
+    size_ = new_size;
+    return 0;
+  }
+
+  // callback into java to expand the buffer
+  jobject ret =
+      env_->CallObjectMethod(jexpander_, vector_expander_method_, vector_idx_, new_size);
+  if (env_->ExceptionCheck()) {
+    env_->ExceptionDescribe();
+    env_->ExceptionClear();
+    ThrowPendingException("buffer expand failed in java");
+    return -1;
+  }
+
+  jlong ret_address = env_->GetLongField(ret, vector_expander_ret_address_);
+  jlong ret_capacity = env_->GetLongField(ret, vector_expander_ret_capacity_);
+  assert(ret_capacity > new_size);
+
+  data_ = reinterpret_cast<uint8_t*>(ret_address);
+  size_ = new_size;
+  capacity_ = ret_capacity;
+  return 0;
+}
+
 jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   JNIEnv* env;
   if (vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION) != JNI_OK) {
@@ -26,6 +102,13 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved) {
       CreateGlobalClassReference(env, "Ljni/DummyData;");
   kJniExceptionClass =
       CreateGlobalClassReference(env, "Ljni/JniException;");
+
+  vector_expander_class_ = CreateGlobalClassReference(env, "Lvector/VectorExpander;");
+  vector_expander_ret_class_ = CreateGlobalClassReference(env, "Lvector/VectorExpander$ExpandResult;");
+  vector_expander_method_ =
+       GetMethodID(env, vector_expander_class_, "expandOutputVectorAtIndex", "(IJ)Lvector/VectorExpander$ExpandResult;");
+  vector_expander_ret_address_ = GetFieldID(env, vector_expander_ret_class_, "address", "J");
+  vector_expander_ret_capacity_ = GetFieldID(env, vector_expander_ret_class_, "capacity", "J");
 
   // global init
 

@@ -23,6 +23,9 @@ cmake_minimum_required(VERSION 3.11)
 message(STATUS "Building using CMake version: ${CMAKE_VERSION}")
 project(java_jni_demo)
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
 # Find java/jni
 include(UseJava)
 
