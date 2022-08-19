@@ -4,6 +4,8 @@
 
 #include <stdexcept>
 
+namespace {
+
 class JniPendingException : public std::runtime_error {
  public:
   explicit JniPendingException(const std::string& arg) : std::runtime_error(arg) {}
@@ -65,6 +67,8 @@ class JNIEnvGuard {
   bool should_detach_;
   JNIEnv* env_;
 };
+
+} // namespace
 
 #define JNI_METHOD_START try {
 // macro ended
