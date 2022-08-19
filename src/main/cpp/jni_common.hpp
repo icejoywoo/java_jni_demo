@@ -2,6 +2,8 @@
 
 #include <jni.h>
 
+#include <stdexcept>
+
 class JniPendingException : public std::runtime_error {
  public:
   explicit JniPendingException(const std::string& arg) : std::runtime_error(arg) {}
