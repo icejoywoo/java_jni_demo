@@ -45,6 +45,7 @@ add_jar(${PROJECT_NAME}
         src/main/java/jni/JniLoader.java
         src/main/java/jni/JniWrapper.java
         src/main/java/jni/DummyData.java
+        src/main/java/jni/JniSignatureDemo.java
         GENERATE_NATIVE_HEADERS
         hello_jni-native
         DESTINATION
