@@ -1,5 +1,6 @@
 #include "jni_JniWrapper.h"
 
+#include <cstdio>
 #include <string>
 
 static jint JNI_VERSION = JNI_VERSION_1_6;
@@ -58,7 +59,7 @@ class JavaResizableBuffer {
 
 int JavaResizableBuffer::Resize(const int64_t new_size, bool shrink_to_fit) {
   if (shrink_to_fit == true) {
-    ThrowPendingException("shrink not implemented");
+    JniThrow("shrink not implemented");
     return -1;
   }
 
@@ -74,7 +75,7 @@ int JavaResizableBuffer::Resize(const int64_t new_size, bool shrink_to_fit) {
   if (env_->ExceptionCheck()) {
     env_->ExceptionDescribe();
     env_->ExceptionClear();
-    ThrowPendingException("buffer expand failed in java");
+    JniThrow("buffer expand failed in java");
     return -1;
   }
 
@@ -140,7 +141,16 @@ JNIEXPORT jbyteArray JNICALL Java_jni_JniWrapper_dummyCall___3B
   JNI_METHOD_START
   jsize array_len = env->GetArrayLength(array);
   jbyte* raw_array = env->GetByteArrayElements(array, 0);
-  return array;
+
+  // iterate byte array and plus 1 in every element
+  for (int i = 0; i < array_len; i++) {
+    raw_array[i] += 1;
+  }
+
+  // build a byte array to return
+  jbyteArray ret = env->NewByteArray(array_len);
+  env->SetByteArrayRegion(ret, 0, array_len, raw_array);
+  return ret;
   JNI_METHOD_END(nullptr)
 }
 
@@ -149,7 +159,16 @@ JNIEXPORT jcharArray JNICALL Java_jni_JniWrapper_dummyCall___3C
   JNI_METHOD_START
   jsize array_len = env->GetArrayLength(array);
   jchar* raw_array = env->GetCharArrayElements(array, 0);
-  return array;
+
+  // iterate char array and plus 1 in every element
+  for (int i = 0; i < array_len; i++) {
+    raw_array[i] += 1;
+  }
+
+  // build a char array to return
+  jcharArray ret = env->NewCharArray(array_len);
+  env->SetCharArrayRegion(ret, 0, array_len, raw_array);
+  return ret;
   JNI_METHOD_END(nullptr)
 }
 
@@ -158,7 +177,16 @@ JNIEXPORT jintArray JNICALL Java_jni_JniWrapper_dummyCall___3I
   JNI_METHOD_START
   jsize array_len = env->GetArrayLength(array);
   jint* raw_array = env->GetIntArrayElements(array, 0);
-  return array;
+
+  // iterate int array and plus 1 in every element
+  for (int i = 0; i < array_len; i++) {
+    raw_array[i] += 1;
+  }
+
+  // build a int array to return
+  jintArray ret = env->NewIntArray(array_len);
+  env->SetIntArrayRegion(ret, 0, array_len, raw_array);
+  return ret;
   JNI_METHOD_END(nullptr)
 }
 
@@ -167,36 +195,58 @@ JNIEXPORT jlongArray JNICALL Java_jni_JniWrapper_dummyCall___3J
   JNI_METHOD_START
   jsize array_len = env->GetArrayLength(array);
   jlong* raw_array = env->GetLongArrayElements(array, 0);
-  return array;
+
+  // iterate long array and plus 1 in every element
+  for (int i = 0; i < array_len; i++) {
+    raw_array[i] += 1;
+  }
+
+  // build a long array to return
+  jlongArray ret = env->NewLongArray(array_len);
+  env->SetLongArrayRegion(ret, 0, array_len, raw_array);
+  return ret;
   JNI_METHOD_END(nullptr)
 }
 
 JNIEXPORT jobjectArray JNICALL Java_jni_JniWrapper_dummyCall___3Ljava_lang_String_2
   (JNIEnv* env, jobject obj, jobjectArray array) {
   JNI_METHOD_START
-//  jsize array_len = env->GetArrayLength(array);
-//  jstring* raw_array = env->GetStringArrayElements(array, 0);
-  return array;
+  jsize array_len = env->GetArrayLength(array);
+
+  // iterate object array and build result
+  jobjectArray ret = env->NewObjectArray(array_len, env->FindClass("java/lang/String"), nullptr);
+  for (int i = 0; i < array_len; i++) {
+    jstring element = (jstring) env->GetObjectArrayElement(array, i);
+    const char *str = env->GetStringUTFChars(element, 0);
+    char tmp[128];
+    snprintf(tmp, sizeof(tmp), "%s_", str);
+    env->ReleaseStringUTFChars(element, str);
+
+    jstring jstr = env->NewStringUTF(tmp);
+    env->SetObjectArrayElement(ret, i, jstr);
+  }
+
+  return ret;
   JNI_METHOD_END(nullptr)
 }
 
 JNIEXPORT jlong JNICALL Java_jni_JniWrapper_buildProjector
   (JNIEnv *env, jobject obj, jbyteArray, jbyteArray, jint, jlong) {
   JNI_METHOD_START
-  return 0;
+  JniThrow("Not Implemented yet");
   JNI_METHOD_END(-1)
 }
 
 JNIEXPORT void JNICALL Java_jni_JniWrapper_evaluateProjector
   (JNIEnv *env, jobject obj, jobject, jlong, jint, jlongArray, jlongArray, jint, jint, jlong, jlong, jlongArray, jlongArray) {
   JNI_METHOD_START
-  return;
+  JniThrow("Not Implemented yet");
   JNI_METHOD_END()
 }
 
 JNIEXPORT void JNICALL Java_jni_JniWrapper_closeProjector
   (JNIEnv *env, jobject obj, jlong) {
   JNI_METHOD_START
-  return;
+  JniThrow("Not Implemented yet");
   JNI_METHOD_END()
 }
