@@ -3,6 +3,7 @@ package jni;
 import org.junit.Test;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 public class TestJniWrapper {
     @Test
@@ -23,5 +24,21 @@ public class TestJniWrapper {
         String[] stringArray = {"1", "2", "3"};
         String[] expectedStringArray = {"1_", "2_", "3_"};
         assertArrayEquals(expectedStringArray, jni.dummyCall(stringArray));
+    }
+
+    @Test
+    public void testDummyData() {
+        DummyData input = new DummyData();
+        JniWrapper jni = JniWrapper.get();
+        DummyData output = jni.objectCall(input);
+        assertEquals(true, output.aBoolean);
+        assertEquals(1, output.aByte);
+        assertEquals(1, output.aChar);
+        assertEquals(1, output.aShort);
+        assertEquals(1, output.anInt);
+        assertEquals(1, output.aLong);
+        assertEquals(1, output.aFloat, 0.0001);
+        assertEquals(1, output.aDouble, 0.0001);
+        assertEquals("_", output.aString);
     }
 }

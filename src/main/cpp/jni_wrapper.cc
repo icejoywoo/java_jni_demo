@@ -230,6 +230,62 @@ JNIEXPORT jobjectArray JNICALL Java_jni_JniWrapper_dummyCall___3Ljava_lang_Strin
   JNI_METHOD_END(nullptr)
 }
 
+JNIEXPORT jobject JNICALL Java_jni_JniWrapper_objectCall
+  (JNIEnv *env, jobject obj, jobject dummyDataObject) {
+  jfieldID dummy_data_aBoolean_ = GetFieldID(env, kDummyDataClass, "aBoolean", "Z");
+  jfieldID dummy_data_aByte_ = GetFieldID(env, kDummyDataClass, "aByte", "B");
+  jfieldID dummy_data_aChar_ = GetFieldID(env, kDummyDataClass, "aChar", "C");
+  jfieldID dummy_data_aShort_ = GetFieldID(env, kDummyDataClass, "aShort", "S");
+  jfieldID dummy_data_anInt_ = GetFieldID(env, kDummyDataClass, "anInt", "I");
+  jfieldID dummy_data_aLong_ = GetFieldID(env, kDummyDataClass, "aLong", "J");
+  jfieldID dummy_data_aFloat_ = GetFieldID(env, kDummyDataClass, "aFloat", "F");
+  jfieldID dummy_data_aDouble_ = GetFieldID(env, kDummyDataClass, "aDouble", "D");
+  jfieldID dummy_data_aString_ = GetFieldID(env, kDummyDataClass, "aString", "Ljava/lang/String;");
+
+  jboolean aBoolean = env->GetBooleanField(dummyDataObject, dummy_data_aBoolean_);
+  jbyte aByte = env->GetByteField(dummyDataObject, dummy_data_aByte_);
+  jchar aChar = env->GetCharField(dummyDataObject, dummy_data_aChar_);
+  jshort aShort = env->GetShortField(dummyDataObject, dummy_data_aShort_);
+  jint anInt = env->GetIntField(dummyDataObject, dummy_data_anInt_);
+  jlong aLong = env->GetLongField(dummyDataObject, dummy_data_aLong_);
+  jfloat aFloat = env->GetFloatField(dummyDataObject, dummy_data_aFloat_);
+  jdouble aDouble = env->GetDoubleField(dummyDataObject, dummy_data_aDouble_);
+  jstring aString = (jstring) env->GetObjectField(dummyDataObject, dummy_data_aString_);
+
+  aBoolean = !aBoolean;
+  aByte += 1;
+  aChar += 1;
+  aShort += 1;
+  anInt += 1;
+  aLong += 1;
+  aFloat += 1;
+  aDouble += 1;
+
+  const char *str = aString != NULL ? env->GetStringUTFChars(aString, 0) : "";
+  char tmp[128];
+  snprintf(tmp, sizeof(tmp), "%s_", str);
+  if (aString != NULL) {
+    env->ReleaseStringUTFChars(aString, str);
+  }
+  aString = env->NewStringUTF(tmp);
+
+  // create a new DummyData object
+  // https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/functions.html#NewObject
+  jmethodID init = GetMethodID(env, kDummyDataClass, "<init>", "()V");
+  jobject ret = env->NewObject(kDummyDataClass, init);
+  env->SetBooleanField(ret, dummy_data_aBoolean_, aBoolean);
+  env->SetByteField(ret, dummy_data_aByte_, aByte);
+  env->SetCharField(ret, dummy_data_aChar_, aChar);
+  env->SetShortField(ret, dummy_data_aShort_, aShort);
+  env->SetIntField(ret, dummy_data_anInt_, anInt);
+  env->SetLongField(ret, dummy_data_aLong_, aLong);
+  env->SetFloatField(ret, dummy_data_aFloat_, aFloat);
+  env->SetDoubleField(ret, dummy_data_aDouble_, aDouble);
+  env->SetObjectField(ret, dummy_data_aString_, aString);
+
+  return ret;
+}
+
 JNIEXPORT jlong JNICALL Java_jni_JniWrapper_buildProjector
   (JNIEnv *env, jobject obj, jbyteArray, jbyteArray, jint, jlong) {
   JNI_METHOD_START
