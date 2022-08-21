@@ -3,13 +3,16 @@ name: C/C++ CI
 on: [push]
 
 jobs:
-  ubuntu-build-with-deps:
+  ubuntu-build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           submodules: true
+
+      - name: Install Ninja
+        run: sudo apt install -y g++ cmake ccache ninja-build checkinstall
 
       - name: Build And Run
         run: sudo bash ${{github.workspace}}/package_and_run.sh
