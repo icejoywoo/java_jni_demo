@@ -46,6 +46,15 @@ public class JniWrapper {
     public native DummyData objectCall(DummyData dummyData);
 
     /**
+     * call a java method in jni
+     * refer: gandiva JniWrapper.evaluateProjector
+     * @param expander VectorExpander object
+     * @param index vector index
+     * @param toCapacity vector target capacity
+     */
+    public native void callVectorExpander(Object expander, long memoryAddress, long length, int index, long toCapacity);
+
+    /**
      * Generates the projector module to evaluate the expressions with
      * custom configuration.
      *

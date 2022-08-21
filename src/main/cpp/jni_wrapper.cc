@@ -1,6 +1,7 @@
 #include "jni_JniWrapper.h"
 
 #include <cstdio>
+#include <memory>
 #include <string>
 
 static jint JNI_VERSION = JNI_VERSION_1_6;
@@ -284,6 +285,14 @@ JNIEXPORT jobject JNICALL Java_jni_JniWrapper_objectCall
   env->SetObjectField(ret, dummy_data_aString_, aString);
 
   return ret;
+}
+
+JNIEXPORT void JNICALL Java_jni_JniWrapper_callVectorExpander
+  (JNIEnv *env, jobject obj, jobject jexpander, jlong memoryAddress, jlong length, jint index, jlong toCapacity) {
+  uint8_t* data_buf = reinterpret_cast<uint8_t*>(memoryAddress);
+  std::shared_ptr<JavaResizableBuffer> buffer =
+        std::make_shared<JavaResizableBuffer>(env, jexpander, index, data_buf, length);
+  buffer->Resize(toCapacity, false);
 }
 
 JNIEXPORT jlong JNICALL Java_jni_JniWrapper_buildProjector

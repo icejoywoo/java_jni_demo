@@ -1,9 +1,11 @@
 package jni;
 
 import org.junit.Test;
+import vector.MockVector;
+import vector.VectorExpander;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+import static vector.MockVector.DEFAULT_CAPACITY;
 
 public class TestJniWrapper {
     @Test
@@ -40,5 +42,19 @@ public class TestJniWrapper {
         assertEquals(1, output.aFloat, 0.0001);
         assertEquals(1, output.aDouble, 0.0001);
         assertEquals("_", output.aString);
+    }
+
+    @Test
+    public void testCallVectorExpander() {
+        JniWrapper jni = JniWrapper.get();
+
+        MockVector[] vectors = new MockVector[5];
+        for (int i = 0; i < 5; i++) {
+            vectors[i] = new MockVector();
+        }
+        VectorExpander expander = new VectorExpander(vectors);
+        for (int i = 0; i < 5; i++) {
+            jni.callVectorExpander(expander, vectors[i].memoryAddress(), vectors[i].capacity(), i, DEFAULT_CAPACITY * 10L);
+        }
     }
 }
