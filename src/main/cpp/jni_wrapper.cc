@@ -1,5 +1,6 @@
 #include "jni_JniWrapper.h"
 
+#include <cassert>
 #include <cstdio>
 #include <memory>
 #include <string>
