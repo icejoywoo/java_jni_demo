@@ -23,5 +23,9 @@ BUILD_DIR=release-build
 
 # run jar
 (
+  echo "running demo.HelloJni:"
   ${JAVA_HOME}/bin/java -cp ${CURRENT_DIR}/target/*.jar demo.HelloJni
+
+  echo "running jni.JniDemo:"
+  ${JAVA_HOME}/bin/java -cp ${CURRENT_DIR}/target/*.jar -Djava.library.path=${CURRENT_DIR}/${BUILD_DIR} jni.JniDemo
 )
