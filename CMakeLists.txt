@@ -46,6 +46,7 @@ add_jar(${PROJECT_NAME}
         src/main/java/jni/JniWrapper.java
         src/main/java/jni/DummyData.java
         src/main/java/jni/JniSignatureDemo.java
+        src/main/java/jni/JniDemo.java
         GENERATE_NATIVE_HEADERS
         hello_jni-native
         DESTINATION
@@ -56,4 +57,10 @@ add_library(hello_jni SHARED ${SOURCES})
 target_link_libraries(hello_jni ${JAVA_JVM_LIBRARY})
 add_dependencies(hello_jni ${PROJECT_NAME})
 
+set(DEMO_SOURCES src/main/cpp/jni_demo.cc)
+add_library(jnidemo SHARED ${DEMO_SOURCES})
+target_link_libraries(jnidemo ${JAVA_JVM_LIBRARY})
+add_dependencies(jnidemo ${PROJECT_NAME})
+
 install(TARGETS hello_jni DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(TARGETS jnidemo DESTINATION ${CMAKE_INSTALL_LIBDIR})
