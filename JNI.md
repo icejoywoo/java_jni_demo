@@ -9,6 +9,11 @@ tags: ['Java', 'JNI']
 
 JNI 的全称是 Java Native Interface，是一种 Java 的 Native 编程接口，支持 Java 与 C/C++ 直接相互调用，从 JDK 1.0 开始提供。
 
+> The JNI is a native programming interface. It allows Java code that runs inside a Java Virtual Machine (VM) to interoperate with applications and libraries written in other programming languages, such as C, C++, and assembly.
+> The most important benefit of the JNI is that it imposes no restrictions on the implementation of the underlying Java VM. Therefore, Java VM vendors can add support for the JNI without affecting other parts of the VM. Programmers can write one version of a native application or library and expect it to work with all Java VMs supporting the JNI.
+
+参考：[JNI ch1. Introduction](https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/intro.html)
+
 # 基本使用流程
 
 通过一个简单的例子来介绍下 JNI 的使用方法，对整体 JNI 有个初步的整体概念。
@@ -201,6 +206,40 @@ jboolean aBoolean = env->GetBooleanField(dataObject, data_aBoolean_);
 jstring aString = (jstring) env->GetObjectField(dataObject, data_aString_);
 ```
 
+# 其他
+
+## classpath 加载 JNI 动态库
+
+默认最简单的方式是从 java.library.path 获取，通过 System.loadLibrary 来加载，但是这样需要 jvm 启动的时候设置这个路径，就是使用方需要感知到JNI的存在。
+
+社区中大部分的 JNI 动态库加载都是通过 classpath 查找 resource 的方式来加载动态库的，大致分为两步：
+1. 通过 resource 的方式读取对应的动态库文件，拷贝至一个 tmp 路径下
+2. 通过 System.load 的方式，加载 tmp 路径的动态库
+
+这样做的好处是：
+1. 使用方不需要感知 JNI 的存在：jvm 不需要单独设置 java.library.path
+2. 方便打包JNI到jar中：打包为 jar 的时候，可以将动态库一起打包，这样方便作为library提供
+
+这里的代码逻辑可以参考 Arrow 的 [JniLoader.java](https://github.com/apache/arrow/blob/master/java/c/src/main/java/org/apache/arrow/c/jni/JniLoader.java) 的部分：
+```java
+  private void load(String name) {
+    final String libraryToLoad = System.mapLibraryName(name);
+    try {
+      // 拷贝动态库的文件内容到一个临时文件中（因为无法直接从 resource 中 load 动态库）
+      File temp = File.createTempFile("jnilib-", ".tmp", new File(System.getProperty("java.io.tmpdir")));
+      try (final InputStream is = JniWrapper.class.getClassLoader().getResourceAsStream(libraryToLoad)) {
+        if (is == null) {
+          throw new FileNotFoundException(libraryToLoad);
+        }
+        Files.copy(is, temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        // 加载临时路径的动态库
+        System.load(temp.getAbsolutePath());
+      }
+    } catch (IOException e) {
+      throw new IllegalStateException("error loading native libraries: " + e);
+    }
+  }
+```
 
 ## CMake 编译
 
